@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 
 from typing import List
@@ -16,7 +17,6 @@ html = """
     </head>
     <body>
         <h1>WebSocket Chat</h1>
-        <h2>Your ID: <span id="ws-id"></span></h2>
         <form action="" onsubmit="sendMessage(event)">
             <input type="text" id="messageText" autocomplete="off"/>
             <button>Send</button>
@@ -24,8 +24,8 @@ html = """
         <ul id='messages'>
         </ul>
         <script>
-            var token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzgzNjIwNTEsImV4cCI6MTY3ODM2NTY1MSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoic3RyaW5nQHN0cmkubmcifQ.twkFbUHqZG2bNVCLpSts1QxSZzGXkR4TY2VKYX88gHJ7WN5LcHWbGUjMi3CLC7GKvJsURxP6qaFSY0AU9kR9OWSEwQKvXaR2bI9YmluclNXRv-It13S6lAxtKiGeqAc8pUvbi5eabp5VKc_vxVj4rhFtYaXt-e2AbXu26EF9ta8AcNW_AEy_esX59eZ9Cf7Mn1Bh0b_54L4BovQV-9quagbWwD8NICC7axxPH4XeiZI5TmDXrEGrcI7Il951EVoVyL4z-UipY1cA1BVxxAVXoTuMXcTDvE9AUX1ySv_qTXyHMjh6PPCjiMtilcQTgusQ1GqKEhtHuL5aQyyMpgIF0A'
-            document.querySelector("#ws-id").textContent = token;
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
             var ws = new WebSocket(`ws://localhost:8000/ws/${token}`);
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
@@ -76,7 +76,7 @@ async def get():
 @app.websocket("/ws/{token}")
 async def websocket_endpoint(websocket_connection: WebSocket, token: str):
     await manager.connect(websocket_connection)
-    url = "https://127.0.0.1:8001/api/users/1/info"
+    url = os.getenv('API_BASE_URL') +"/api/users/1/info"
 
     headers = {
         'Accept': 'application/ld+json',
