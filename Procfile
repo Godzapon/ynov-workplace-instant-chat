@@ -1,1 +1,1 @@
-worker: uvicorn main:app
+web: uvicorn myapp:app --port 80 --host 0.0.0.0
